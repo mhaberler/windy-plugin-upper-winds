@@ -56,6 +56,9 @@
         </div>
         <hr />
     {/if}
+    {#if flightLevels && flightLevels.length > 0}
+        <button on:click={downloadData}> Download data </button>
+    {/if}
     <hr />
 </section>
 
@@ -75,6 +78,36 @@
     const { title } = config;
     const { version } = config;
     const contrail = new Contrail();
+
+    const saveDataAsText = (filename: string, data: string) => {
+        const blob = new Blob([data], { type: 'text/plain' });
+        const link = document.createElement('a');
+
+        link.download = filename;
+        link.href = window.URL.createObjectURL(blob);
+        link.dataset.downloadurl = ['text/plain', link.download, link.href].join(':');
+
+        const evt = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+
+        link.dispatchEvent(evt);
+        link.remove();
+    };
+
+    function convertLevel(o: any) {
+        return `${o.height} ${o.pressure}  ${o.temperature} ${o.humidityWater} ${o.windDirection} ${o.windSpeed}`;
+    }
+
+    function arrayToString(array: any[], convert: (json: unknown) => unknown) {
+        return array.map(obj => convert(obj)).join('\n');
+    }
+
+    function downloadData() {
+        saveDataAsText('heidis.txt', arrayToString(flightLevels, convertLevel));
+    }
 
     export const onopen = async (_params: { lat: any; lon: any }) => {
         if (!_params) {
