@@ -146,6 +146,11 @@
         }
         await upperwind.handleEvent(_params); // Wait for handleEvent to complete
         assignAnalysis(upperwind);
+        popup
+                .setLatLng([_params.lat, _params.lon])
+                .setContent(clickLocation)
+                .addTo(activeLayer)
+                .openOn(map);
     };
 
     const listener = () => {
