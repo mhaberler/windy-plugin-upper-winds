@@ -45,8 +45,8 @@ export class UpperWind {
         return this._elevation;
     }
 
-     /** Return step */
-     get step() {
+    /** Return step */
+    get step() {
         return this._step;
     }
 
@@ -68,7 +68,15 @@ export class UpperWind {
     get model() {
         return this._model;
     }
-    
+
+    restratify() {
+        if (this._rawdata.length) {
+            this._flightLevels = this.stratify(this._rawdata);
+            return this._flightLevels;
+        }
+        return undefined;
+    }
+
     /** Handle the click event (The request for the upper wind analysis) */
     async handleEvent(ev: { lat: any; lon: any }) {
         try {
@@ -190,7 +198,7 @@ export class UpperWind {
         if (endHeight < 0) {
             endHeight = 0;
         }
-       
+
         // Avoiding NaN in pressure values greater then 1000 hPa
         if (isNaN(data[data.length - 1].pressure)) {
             //data[data.length - 1].pressure = data[data.length - 2].pressure + (data[data.length - 2].height / 32);
@@ -247,7 +255,7 @@ export class UpperWind {
             upper.heightAGL,
             lower.heightAGL,
             ratio,
-        )/10)*10; //Round to 10 to avoid rounding errors
+        ) / 10) * 10; //Round to 10 to avoid rounding errors
 
         const temperature = Utility.linearInterpolation(
             upper.temperature,

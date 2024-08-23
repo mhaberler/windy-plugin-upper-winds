@@ -9,29 +9,9 @@
         {title} <span style="font-size: 0.5em;">v{version}</span>
     </div>
 
-    {#if !ready}
-        <div>
-            <h4>
-                <strong>Settings: </strong><br />
-                <h4>
-                    <div class="mb-3">
-                        <label for="" class="form-label">Choose interpolation step: </label>
-                        <select bind:value={settings.increment} class="from-select">
-                            <option value="" disabled>-- Select Increment --</option>
-                            {#each incrementquestions as incrementquestion}
-                                <option value={incrementquestion.text}
-                                    >{incrementquestion.text}</option
-                                >
-                            {/each}
-                        </select>
-                        <label for="" class="form-label">{altitudeUnit} </label>
-                    </div>
-                </h4>
-            </h4>
-        </div>
-        <hr />
+
         <h4><strong>Click on map to generate an upper wind table</strong></h4>
-    {:else}
+  
         <h4>
             <strong>Location: </strong><br />
             {clickLocation}
@@ -98,7 +78,27 @@
             <button on:click={() => downloadData(Format.FMT_JSON)}> Download JSON </button>
             <button on:click={() => downloadData(Format.FMT_HEIDIS)}> Download HEIDIS </button>
         </div>
-    {/if}
+    <hr />
+    <div>
+        <h4>
+            <strong>Settings: </strong><br />
+            <h4>
+                <div class="mb-3">
+                    <label for="" class="form-label">Choose interpolation step: </label>
+                    <select bind:value={settings.increment} class="from-select">
+                        <option value="" disabled>-- Select Increment --</option>
+                        {#each incrementquestions as incrementquestion}
+                            <option value={incrementquestion.text}
+                                >{incrementquestion.text}</option
+                            >
+                        {/each}
+                    </select>
+                    <label for="" class="form-label">{altitudeUnit} </label>
+                </div>
+            </h4>
+        </h4>
+    </div>
+
     <hr />
 </section>
 
@@ -165,6 +165,10 @@
     $: {
         console.log('----> Step set to: ', settings.increment);
         upperwind._step = Number(settings.increment);
+        const fl = upperwind.restratify();
+        if (fl) {
+            flightLevels = fl;
+        }
     }
 
     /* Add layer for lines to the map*/
