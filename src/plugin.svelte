@@ -299,15 +299,16 @@
         if (format === Format.FMT_HEIDIS) {
             // which keys to extract into columns, by field order
             const sequence = [
-                'pressure',
-                'height',
-                'heightAGL',
-                'temperature',
-                'dewPointt',
-                'wind_u',
-                'wind_v',
-                'windDir',
-                'windSp',
+                { key: 'pressure', header: 'Druck', unit: 'hPa'}, 
+                // 'pressure',
+                // 'height',
+                // 'heightAGL',
+                // 'temperature',
+                // 'dewPointt',
+                // 'wind_u',
+                // 'wind_v',
+                // 'windDir',
+                // 'windSp',
             ];
 
             let headerLine1 = ['p', 'hAMSL', 'hAGL', 'T', 'Td', 'u', 'v', 'Dir', 'Spd'];
@@ -327,13 +328,15 @@
             const fieldSeparator = ' ';
             const rowConverter = (row: any) => {
                 return sequence
-                    .map(field => `${row[field]}` + fieldSeparator)
+                    .map(field => `${row[field.key]}` + fieldSeparator)
                     .join('')
                     .slice(0, -1);
             };
 
             const data = flightLevels.map(rowConverter).join(lineSeparator);
-            const blob = new Blob([data], { type: 'text/plain' });
+            const columnNames = sequence.map(fd => fd.header + fieldSeparator).join('').slice(0, -1) + lineSeparator;
+            const units = sequence.map(fd => fd.unit + fieldSeparator).join('').slice(0, -1) + lineSeparator;
+            const blob = new Blob([columnNames + units + data], { type: 'text/plain' });
             saveTemplateAsFile(
                 forecastDateString + '_' + forecastModel + '.txt',
                 blob,
